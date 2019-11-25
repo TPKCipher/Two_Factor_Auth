@@ -115,7 +115,7 @@ if (isset($_POST['verify']))
         session_destroy();
         unset($_SESSION['username']);
         unset($_SESSION['verificationnum']);
-        header('location: success.php');
+        header('location: Login.php');
     }
 
     if (count($errors) == 0) // Not wrong code
