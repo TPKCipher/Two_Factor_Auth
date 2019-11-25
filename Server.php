@@ -15,7 +15,8 @@ $Email = "";
 $errors = array();
 $randVerification = "";
 $Verification = "";
-$db = mysqli_connect('localhost', 'root', 'newpassword', 'securityproject');
+$db = mysqli_connect('localhost', 'root', '', 'software_security_twofactor');
+//$db = mysqli_connect('localhost', 'root', 'newpassword', 'securityproject');
 
 if (isset($_POST['register']))
 {
@@ -45,7 +46,7 @@ if (isset($_POST['register']))
     {
 
         $password = md5($Password_1);
-        $sql = "INSERT INTO user (username, email, password) 
+        $sql = "INSERT INTO users (username, email, password) 
                     VALUES ('{$Username}', '{$Email}', '{$password}')";
         mysqli_query($db, $sql);
 
@@ -78,14 +79,14 @@ if (isset($_POST['login']))
     {
         // Check for user
         $password = md5($password);
-        $query = "SELECT * FROM user WHERE username = '{$Username}' AND password = '{$password}'";
+        $query = "SELECT * FROM users WHERE username = '{$Username}' AND password = '{$password}'";
         $result = mysqli_query($db, $query);
 
 
         if (mysqli_num_rows($result) == 1)
         {
             // Send Verification email
-            $query = "SELECT email FROM user WHERE username = '{$Username}' AND password = '{$password}'"; // get email
+            $query = "SELECT email FROM users WHERE username = '{$Username}' AND password = '{$password}'"; // get email
             $result = mysqli_query($db, $query);
 
             $Email = mysqli_fetch_array($result)['email'];
@@ -110,6 +111,11 @@ if (isset($_POST['verify']))
     if ($_SESSION['verificationnum'] != $Verification)
     {
         array_push($errors, "Invalid verification code");   // Wrong Code
+
+        session_destroy();
+        unset($_SESSION['username']);
+        unset($_SESSION['verificationnum']);
+        header('location: success.php');
     }
 
     if (count($errors) == 0) // Not wrong code
@@ -162,5 +168,4 @@ function sendEmail($Email, $randVerification)
     }
     return $randVerification;
 }
-
 ?>
