@@ -23,7 +23,7 @@
 
     <?php if (isset($_SESSION['username'])): ?>
         <p>
-            Welcome <strong><?php echo $_SESSION['username']; ?></strong>
+           <strong> Welcome <?php echo $_SESSION['username']; ?></strong>
         </p>
         <p>
             <a href="success.php?logout='1'" style="color: red;">Logout</a>

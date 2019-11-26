@@ -5,11 +5,13 @@ use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 require 'vendor/autoload.php';
 
+//------------------------ Start Session ------------------------//
 if (!isset($_SESSION))
 {
     session_start();
 }
 
+//------------------------ Initialization ------------------------//
 $Username = "";
 $Email = "";
 $errors = array();
@@ -18,6 +20,7 @@ $Verification = "";
 $db = mysqli_connect('localhost', 'root', '', 'software_security_twofactor');
 //$db = mysqli_connect('localhost', 'root', 'newpassword', 'securityproject');
 
+//------------------------ Register New User ------------------------//
 if (isset($_POST['register']))
 {
     $Username = mysqli_real_escape_string($db, $_POST['username']);
@@ -59,7 +62,7 @@ if (isset($_POST['register']))
 
 }
 
-//  Login
+//------------------------ Login ------------------------//
 if (isset($_POST['login']))
 {
     $Username = mysqli_real_escape_string($db, $_POST['username']);
@@ -103,22 +106,23 @@ if (isset($_POST['login']))
     }
 }
 
+//------------------------ Check the Verification Code Input ------------------------//
 if (isset($_POST['verify']))
 {
     // Code Entered
     $Verification = mysqli_real_escape_string($db, $_POST['code']);
 
-    if ($_SESSION['verificationnum'] != $Verification)
+    if ($_SESSION['verificationnum'] != $Verification)                  // Wrong Code
     {
-        array_push($errors, "Invalid verification code");   // Wrong Code
+        array_push($errors, "Invalid verification code");
 
-        session_destroy();
-        unset($_SESSION['username']);
-        unset($_SESSION['verificationnum']);
-        header('location: Login.php');
+        session_destroy();                              // Clear Session
+        unset($_SESSION['username']);                   //
+        unset($_SESSION['verificationnum']);            //
+        header('location: Login.php');           // Restart Login process and session
     }
 
-    if (count($errors) == 0) // Not wrong code
+    if (count($errors) == 0)                                            // Not wrong code
     {
         // Go to logged in state
         $_SESSION['username'] = $Username;
@@ -129,7 +133,7 @@ if (isset($_POST['verify']))
 }
 
 
-// logout
+//------------------------ Logout ------------------------//
 if (isset($_GET['logout']))
 {
     session_destroy();
@@ -137,6 +141,7 @@ if (isset($_GET['logout']))
     header('location: Login.php');
 }
 
+//------------------------ Send Verification Email ------------------------//
 function sendEmail($Email, $randVerification)
 {
     $mail = new PHPMailer(true);
@@ -144,10 +149,10 @@ function sendEmail($Email, $randVerification)
         //Server settings
         $mail->SMTPDebug = SMTP::DEBUG_SERVER;                      // Enable verbose debug output
         $mail->isSMTP();                                            // Send using SMTP
-        $mail->Host = 'smtp.gmail.com';                    // Set the SMTP server to send through
+        $mail->Host = 'smtp.gmail.com';                             // Set the SMTP server to send through
         $mail->SMTPAuth   = true;                                   // Enable SMTP authentication
-        $mail->Username = 'codetester2000@gmail.com';
-        $mail->Password = 'SoftwareSafetySecurity360';                              // SMTP password
+        $mail->Username = 'codetester2000@gmail.com';               //
+        $mail->Password = 'SoftwareSafetySecurity360';              // SMTP password
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;         // Enable TLS encryption; `PHPMailer::ENCRYPTION_SMTPS` also accepted
         $mail->Port       = 587;                                    // TCP port to connect to
 
