@@ -48,9 +48,9 @@ if (isset($_POST['register']))
     if (count($errors) == 0)
     {
 
-        $password = md5($Password_1);
+        $password = md5($Password_1);                                       // Encrypt Password
         $sql = "INSERT INTO users (username, email, password) 
-                    VALUES ('{$Username}', '{$Email}', '{$password}')";
+                    VALUES ('{$Username}', '{$Email}', '{$password}')";     // Enter entry into DB
         mysqli_query($db, $sql);
 
         $_SESSION['username'] = $Username;
@@ -95,7 +95,7 @@ if (isset($_POST['login']))
             $Email = mysqli_fetch_array($result)['email'];
 
 
-            $randVerification = rand(1000,9999);    // make code
+            $randVerification = rand(1000,9999);    // make random 4 digit code
             $_SESSION['verificationnum'] = $randVerification;
             sendEmail($Email, $randVerification);   // Send Email
 
